@@ -1,11 +1,13 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
+import { usePostHog } from 'posthog-js/react';
 import { api, clearToken, isAuthenticated } from '../lib/api';
 import type { UserProfile } from '../lib/types';
 
 export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const posthog = usePostHog();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -43,6 +45,8 @@ export default function Navbar() {
   const handleLogout = () => {
     setIsDropdownOpen(false);
     clearToken();
+    // Reset PostHog session so next user on this device isn't tracked as this user
+    posthog?.reset();
     navigate('/');
     setShowToast(true);
     setTimeout(() => setShowToast(false), 3000);

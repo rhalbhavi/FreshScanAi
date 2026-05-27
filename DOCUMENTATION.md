@@ -862,9 +862,9 @@ npm run dev
 
 | Mode | Endpoint | Models Required | Use Case |
 |------|---------|----------------|----------|
-| Demo | `/api/v1/scan-auto` | ❌ No | Demo presentations, CI |
-| Auto (real) | `/api/v1/scan-auto` | ✅ Yes | Single-image mobile scan |
-| Full scan | `/api/v1/scan` | ✅ Yes | Multi-region expert mode |
+| Demo | `/api/v1/scan-auto` | No | Demo presentations, CI |
+| Auto (real) | `/api/v1/scan-auto` | Yes | Single-image mobile scan |
+| Full scan | `/api/v1/scan` | Yes | Multi-region expert mode |
 
 ### Production Deployment
 - Frontend: Vercel / Netlify (static export)

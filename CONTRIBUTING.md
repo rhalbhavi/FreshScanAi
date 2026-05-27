@@ -126,7 +126,7 @@ Do not open a PR if any of these are failing locally. Fix them first.
 ### Manual requirements (checked during review)
 
 - [ ] Branch is up to date with `main` — rebase, do not merge
-- [ ] No `.env` files, credentials, secrets, or API keys are present anywhere in the diff
+- [ ] No `.env` or `.env.local` files, credentials, secrets, or API keys are present anywhere in the diff
 - [ ] No model weight files (`.pth`, `.pt`, `.onnx`, `.bin`) are committed
 - [ ] No `__pycache__/` directories, `.pyc` files, or macOS `._*` metadata files are committed
 - [ ] New endpoints include corresponding tests in `backend/tests/` or `backend/test_*.py`
@@ -192,7 +192,7 @@ PRs will be closed without review if they:
 
 - Are submitted without a prior issue or maintainer approval for non-trivial changes
 - Fail any automated CI gate
-- Contain `.env` files, secrets, model weights, or binary artifacts
+- Contain `.env` or `.env.local` files, secrets, model weights, or binary artifacts
 - Touch the deployment configuration (`vercel.json`, `Dockerfile`, `startup.sh`) without approval
 - Introduce a new dependency (npm or PyPI) without prior discussion
 - Rewrite existing, working logic without a documented reason

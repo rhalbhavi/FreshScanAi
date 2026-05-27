@@ -6,7 +6,6 @@ body:
     attributes:
       value: |
         This issue is intended for contributors new to the project. It should be self-contained and completable without deep knowledge of the codebase.
-
   - type: textarea
     id: description
     attributes:
@@ -14,28 +13,3 @@ body:
       description: A clear description of what needs to be done.
     validations:
       required: true
-
-  - type: textarea
-    id: context
-    attributes:
-      label: Context and Background
-      description: Any background information or links to relevant code the contributor needs to get started.
-    validations:
-      required: true
-
-  - type: textarea
-    id: acceptance
-    attributes:
-      label: Acceptance Criteria
-      description: Define what done looks like for this task.
-      placeholder: |
-        - [ ] Criterion 1
-        - [ ] Criterion 2
-    validations:
-      required: true
-
-  - type: textarea
-    id: hints
-    attributes:
-      label: Hints
-      description: Relevant files, functions, or documentation to look at first.

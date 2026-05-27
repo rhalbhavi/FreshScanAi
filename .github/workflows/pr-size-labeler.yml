@@ -1,0 +1,23 @@
+name: PR Size Labeler
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  size-label:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Add PR Size Label
+        uses: pascalgn/size-label-action@v0.5.5
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        with:
+          sizes: >
+            {
+              "0": "level: easy",
+              "100": "level: medium",
+              "500": "level: hard"
+            }

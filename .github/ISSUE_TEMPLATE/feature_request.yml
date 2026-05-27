@@ -12,29 +12,9 @@ body:
         - A PR opened for a feature without a linked, approved issue will be closed.
         - Check the [Roadmap in DOCUMENTATION.md](https://github.com/jpdevhub/FreshScanAi/blob/main/DOCUMENTATION.md#14-future-roadmap) first — if your idea is already planned, comment on the existing tracking issue instead.
   - type: textarea
-    id: problem
+    id: description
     attributes:
-      label: Problem
-      description: What problem does this feature solve?
+      label: Description
+      description: What problem does this feature solve and what is your proposed solution?
     validations:
       required: true
-
-  - type: textarea
-    id: solution
-    attributes:
-      label: Proposed Solution
-      description: Describe the feature you want to see implemented.
-    validations:
-      required: true
-
-  - type: textarea
-    id: alternatives
-    attributes:
-      label: Alternatives Considered
-      description: Any alternative approaches you have considered.
-
-  - type: textarea
-    id: additional
-    attributes:
-      label: Additional Context
-      description: Mockups, references, or any other relevant context.

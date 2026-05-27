@@ -116,7 +116,7 @@ DEV_BYPASS_AUTH=true   # never set true in production
 
 | Script | Description |
 |---|---|
-| `npm run setup` | Install dependencies, write `.env`, optionally start local Supabase |
+| `npm run setup` | Install dependencies, write `.env.local` (frontend) & `.env` (backend), optionally start local Supabase |
 | `npm run dev` | Start frontend and backend concurrently |
 | `npm run build` | Production build (TypeScript + Vite) |
 | `npm run lint` | Run ESLint across the codebase |

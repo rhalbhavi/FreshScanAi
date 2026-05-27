@@ -15,8 +15,8 @@ BOLD='\033[1m'
 RESET='\033[0m'
 
 log()  { echo -e "${CYAN}[setup]${RESET} $1"; }
-ok()   { echo -e "${GREEN}  ✓${RESET} $1"; }
-warn() { echo -e "${YELLOW}  ⚠${RESET}  $1"; }
+ok()   { echo -e "${GREEN}  [OK]${RESET} $1"; }
+warn() { echo -e "${YELLOW}  [WARN]${RESET}  $1"; }
 
 echo ""
 echo -e "${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
@@ -32,7 +32,7 @@ ok "node_modules ready"
 
 # ── Step 2: Frontend env ──────────────────────────────────────────────────────
 if [ ! -f "$REPO_ROOT/.env.local" ]; then
-  log "Creating .env.local (enables ⚡ Dev Login button)..."
+  log "Creating .env.local (enables Dev Login button)..."
   echo "VITE_DEV_MODE=true" > "$REPO_ROOT/.env.local"
   ok ".env.local created"
 else
@@ -113,11 +113,11 @@ fi
 # ── Done ───────────────────────────────────────────────────────────────────────
 echo ""
 echo -e "${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-echo -e "${GREEN}${BOLD}  ✓ Setup complete!${RESET}"
+echo -e "${GREEN}${BOLD}  [OK] Setup complete!${RESET}"
 echo ""
 echo -e "  Run:  ${BOLD}npm run dev${RESET}"
 echo -e "  Open: ${BOLD}http://localhost:5173${RESET}"
-echo -e "  Auth: Click ${BOLD}⚡ DEV LOGIN${RESET} — no Google account needed"
+echo -e "  Auth: Click ${BOLD}DEV LOGIN${RESET} — no Google account needed"
 if [ "$USE_LOCAL_SUPABASE" = true ]; then
   echo -e "  DB:   Local Docker — ${BOLD}fully isolated from production${RESET}"
 else

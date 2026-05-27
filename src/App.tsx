@@ -7,10 +7,13 @@ import ScannerPage from './pages/ScannerPage';
 import AnalysisDashboard from './pages/AnalysisDashboard';
 import MarketMapPage from './pages/MarketMapPage';
 import ResultsPage from './pages/ResultsPage';
+import PostHogPageView from './components/PostHogPageView';
 
 export default function App() {
   return (
     <BrowserRouter>
+      {/* Fires a $pageview event to PostHog on every SPA route change */}
+      <PostHogPageView />
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<LandingPage />} />

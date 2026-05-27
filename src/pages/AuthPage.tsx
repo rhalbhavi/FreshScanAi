@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { usePostHog } from 'posthog-js/react';
 import StatusTerminal from '../components/StatusTerminal';
 import { api, setToken, isAuthenticated } from '../lib/api';
 
@@ -9,6 +10,7 @@ const IS_DEV_MODE = import.meta.env.VITE_DEV_MODE === 'true';
 
 export default function AuthPage() {
   const navigate = useNavigate();
+  const posthog = usePostHog();
   const [status, setStatus] = useState<'idle' | 'processing' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -31,6 +33,14 @@ export default function AuthPage() {
       Promise.resolve().then(() => setStatus('processing'));
       setToken(accessToken);
       window.history.replaceState({}, '', '/auth');
+      // Identify the user in PostHog using their JWT sub claim as the ID.
+      // The token is a JWT; we decode the payload to get the user ID.
+      try {
+        const payload = JSON.parse(atob(accessToken.split('.')[1]));
+        posthog?.identify(payload.sub, { email: payload.email });
+      } catch {
+        // Not a JWT or malformed — skip identification silently
+      }
       navigate('/mode', { replace: true });
       return;
     }
@@ -39,7 +49,7 @@ export default function AuthPage() {
     if (isAuthenticated()) {
       navigate('/mode', { replace: true });
     }
-  }, [navigate]);
+  }, [navigate, posthog]);
 
   const handleGoogleLogin = () => {
     window.location.href = api.loginUrl();
@@ -48,6 +58,7 @@ export default function AuthPage() {
   /** Dev-only: skip OAuth entirely, store the bypass token, go straight to /mode */
   const handleDevLogin = () => {
     setToken(DEV_BYPASS_TOKEN);
+    posthog?.identify('dev-user', { email: 'dev@local' });
     navigate('/mode', { replace: true });
   };
 
