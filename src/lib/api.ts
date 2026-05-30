@@ -1,3 +1,4 @@
+import toast from 'react-hot-toast';
 import type {
   ScanResult,
   HistoryScan,
@@ -36,62 +37,61 @@ function authHeaders(): Record<string, string> {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-// ── Core fetch wrapper ────────────────────────────────────────────────────────
+// ── Shared Error Handling Logic ──────────────────────────────────────────────
 
-async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...authHeaders(),
-      ...(options.headers as Record<string, string> || {}),
-    },
-  });
+async function handleResponse(res: Response): Promise<Response> {
+  if (res.ok) return res;
 
-  if (!res.ok) {
+  // Handle 5xx errors (Server Side)
+  if (res.status >= 500) {
+    toast.error("Server error. Please try again later.");
+  } else {
+    // Handle 4xx errors
     const err = await res.json().catch(() => ({ detail: res.statusText }));
     throw new Error((err as { detail?: string }).detail || `HTTP ${res.status}`);
   }
+  
+  throw new Error(`HTTP ${res.status}`);
+}
 
-  return res.json() as Promise<T>;
+async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
+  try {
+    const res = await fetch(`${API_BASE}${path}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeaders(),
+        ...(options.headers as Record<string, string> || {}),
+      },
+    });
+
+    const validRes = await handleResponse(res);
+    return validRes.json() as Promise<T>;
+  } catch (error) {
+    // Catch network-level drops (e.g., ERR_CONNECTION_REFUSED)
+    if (error instanceof TypeError) {
+      toast.error("Unable to connect to the server. Please check your internet connection.");
+    }
+    console.error("API Error:", error);
+    throw error;
+  }
 }
 
 // ── Response envelopes ────────────────────────────────────────────────────────
 
-export interface ScanResponse {
-  success: boolean;
-  scan: ScanResult;
-}
-
-export interface HistoryResponse {
-  success: boolean;
-  count: number;
-  stats: HistoryStats;
-  scans: HistoryScan[];
-}
-
-export interface MarketsResponse {
-  success: boolean;
-  markets: Market[];
-}
-
-export interface GradcamResponse {
-  gradcam_image: string;   // base64 data-URI
-  predicted_class: string;
-  class_index: number;   // 0 | 1 | 2
-  mode: 'real' | 'demo';
-}
+export interface ScanResponse { success: boolean; scan: ScanResult; }
+export interface HistoryResponse { success: boolean; count: number; stats: HistoryStats; scans: HistoryScan[]; }
+export interface MarketsResponse { success: boolean; markets: Market[]; }
+export interface GradcamResponse { gradcam_image: string; predicted_class: string; class_index: number; mode: 'real' | 'demo'; }
 
 // ── API surface ───────────────────────────────────────────────────────────────
 
 export const api = {
-  // Auth
   loginUrl: (): string => `${API_BASE}/api/v1/auth/login/google`,
 
-  getMe: (): Promise<UserProfile> =>
-    apiFetch<UserProfile>('/api/v1/auth/me'),
+  getMe: (): Promise<UserProfile> => apiFetch<UserProfile>('/api/v1/auth/me'),
 
-  // Scans
+  // Scans - Using native fetch with shared handleResponse to accommodate FormData
   submitScan: async (blob: Blob): Promise<ScanResponse> => {
     const form = new FormData();
     form.append('image', blob, 'scan.jpg');
@@ -102,24 +102,16 @@ export const api = {
       body: form,
     });
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({ detail: res.statusText }));
-      throw new Error((err as { detail?: string }).detail || `HTTP ${res.status}`);
-    }
-
-    return res.json() as Promise<ScanResponse>;
+    const validRes = await handleResponse(res);
+    return validRes.json() as Promise<ScanResponse>;
   },
 
-  getLatestScan: (): Promise<ScanResponse> =>
-    apiFetch<ScanResponse>('/api/v1/scans/latest'),
-
-  getScan: (id: string): Promise<ScanResponse> =>
-    apiFetch<ScanResponse>(`/api/v1/scans/${id}`),
-
-  getScanHistory: (limit = 20, offset = 0): Promise<HistoryResponse> =>
+  getLatestScan: (): Promise<ScanResponse> => apiFetch<ScanResponse>('/api/v1/scans/latest'),
+  getScan: (id: string): Promise<ScanResponse> => apiFetch<ScanResponse>(`/api/v1/scans/${id}`),
+  getScanHistory: (limit = 20, offset = 0): Promise<HistoryResponse> => 
     apiFetch<HistoryResponse>(`/api/v1/scans/history?limit=${limit}&offset=${offset}`),
 
-  // Grad-CAM
+  // Grad-CAM - Using native fetch with shared handleResponse
   getGradcam: async (blob: Blob): Promise<GradcamResponse> => {
     const form = new FormData();
     form.append('image', blob, 'gradcam_input.jpg');
@@ -130,15 +122,9 @@ export const api = {
       body: form,
     });
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({ detail: res.statusText }));
-      throw new Error((err as { detail?: string }).detail || `HTTP ${res.status}`);
-    }
-
-    return res.json() as Promise<GradcamResponse>;
+    const validRes = await handleResponse(res);
+    return validRes.json() as Promise<GradcamResponse>;
   },
 
-  // Map
-  getMarkets: (): Promise<MarketsResponse> =>
-    apiFetch<MarketsResponse>('/api/v1/maps/markets'),
+  getMarkets: (): Promise<MarketsResponse> => apiFetch<MarketsResponse>('/api/v1/maps/markets'),
 };
