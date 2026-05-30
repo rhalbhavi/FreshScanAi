@@ -15,12 +15,12 @@ jobs:
     steps:
       - uses: actions/first-interaction@v3
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          issue-message: |
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          issue_message: |
             👋 Welcome to FreshScan AI! Thank you for opening an issue.
             
             Our maintainers will review this shortly. In the meantime, please ensure your report includes all necessary context and reproduction steps (if it's a bug). If this is a security issue, please close this and follow the `SECURITY.md` protocol.
-          pr-message: |
+          pr_message: |
             🎉 Thank you for your Pull Request! We're thrilled to have your contribution to FreshScan AI.
             
             Before we review, please make sure you have:
