@@ -13,12 +13,13 @@ export default defineConfig({
       // Use the existing manifest.json in public/
       manifest: false,
       workbox: {
-        // Precache all JS, CSS, HTML, WASM and ONNX model files so they are
-        // available offline after the first load.
-        globPatterns: ['**/*.{js,css,html,ico,svg,gif,png,wasm,onnx}'],
-        // WASM files are up to 26 MB — raise the default 2 MB limit.
-        maximumFileSizeToCacheInBytes: 30 * 1024 * 1024,
-        // Cache ONNX models with a long TTL (they never change between deploys).
+        // Precache ONLY small app-shell assets (JS/CSS/HTML/icons).
+        // DO NOT include .wasm or .onnx here — they are large (12–26 MB each)
+        // and would cause the Service Worker install to time out.
+        // They are handled below with lazy runtime caching instead.
+        globPatterns: ['**/*.{js,css,html,ico,svg,gif,png}'],
+        // Runtime caching: WASM and ONNX files are cached on first use
+        // (CacheFirst) so subsequent offline scans load instantly.
         runtimeCaching: [
           {
             urlPattern: /\/models\/.*\.onnx$/i,
@@ -26,6 +27,7 @@ export default defineConfig({
             options: {
               cacheName: 'onnx-models',
               expiration: { maxAgeSeconds: 30 * 24 * 60 * 60 }, // 30 days
+              cacheableResponse: { statuses: [0, 200] },
             },
           },
           {
@@ -34,6 +36,7 @@ export default defineConfig({
             options: {
               cacheName: 'wasm-cache',
               expiration: { maxAgeSeconds: 30 * 24 * 60 * 60 },
+              cacheableResponse: { statuses: [0, 200] },
             },
           },
         ],

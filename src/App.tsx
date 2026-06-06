@@ -33,9 +33,11 @@ export default function App() {
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/results" element={<ResultsPage />} />
           
+          {/* Public shareable report — MUST be before the * catchall */}
+          <Route path="/report/:id" element={<PublicReport />} />
+
           {/* Catch-all route for broken links/404s */}
           <Route path="*" element={<NotFound />} />
-          <Route path="/report/:id" element={<PublicReport />} />
         </Route>
       </Routes>
     </BrowserRouter>
