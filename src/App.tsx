@@ -15,7 +15,6 @@ import PostHogPageView from "./components/PostHogPageView";
 import NotFound from "./pages/NotFound";
 import InstallPrompt from "./components/InstallPrompt";
 import PublicReport from "./pages/PublicReport";
-import BackToTopButton from "./components/BackToTopButton";
 
 export default function App() {
   const [runTour, setRunTour] = useState(false);
@@ -39,7 +38,6 @@ export default function App() {
       {/* Fires a $pageview event to PostHog on every SPA route change */}
       <PostHogPageView />
       <InstallPrompt />
-      <BackToTopButton />
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<LandingPage />} />

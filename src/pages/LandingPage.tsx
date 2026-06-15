@@ -1,68 +1,77 @@
-import { Link } from 'react-router-dom';
-import { isAuthenticated } from '../lib/api';
-import { Zap, Eye, MapPin, ScanLine, Target, Award, ChevronDown } from 'lucide-react';
-import GlassCard from '../components/GlassCard';
-import { useState, useEffect } from 'react';
+import { Link } from "react-router-dom";
+import { isAuthenticated } from "../lib/api";
+import {
+  Zap,
+  Eye,
+  MapPin,
+  ScanLine,
+  Target,
+  Award,
+  ChevronDown,
+} from "lucide-react";
+import GlassCard from "../components/GlassCard";
+import { useState, useEffect } from "react";
+import BackToTopButton from "../components/BackToTopButton";
 
 const features = [
   {
     icon: Zap,
-    title: 'Dual-Stream Context',
-    desc: 'Simultaneous processing of specular reflection and biological texture for high-humidity environments.',
+    title: "Dual-Stream Context",
+    desc: "Simultaneous processing of specular reflection and biological texture for high-humidity environments.",
   },
   {
     icon: Eye,
-    title: 'Explainable AI',
+    title: "Explainable AI",
     desc: "Don't just trust a grade. See highlighted markers on the gills, eyes, and scales in real-time.",
   },
   {
     icon: MapPin,
-    title: 'Crowdsourced Map',
-    desc: 'Live freshness heatmaps across local markets powered by anonymized user metadata.',
+    title: "Crowdsourced Map",
+    desc: "Live freshness heatmaps across local markets powered by anonymized user metadata.",
   },
 ];
 
 const steps = [
   {
     icon: ScanLine,
-    step: '01',
-    title: 'Scan Body',
-    desc: 'Position camera 15cm from specimen. Use ambient light or built-in strobe.',
+    step: "01",
+    title: "Scan Body",
+    desc: "Position camera 15cm from specimen. Use ambient light or built-in strobe.",
   },
   {
     icon: Target,
-    step: '02',
-    title: 'Target Biomarkers',
-    desc: 'AI identifies gill saturation, corneal clarity, and epidermal tension.',
+    step: "02",
+    title: "Target Biomarkers",
+    desc: "AI identifies gill saturation, corneal clarity, and epidermal tension.",
   },
   {
     icon: Award,
-    step: '03',
-    title: 'Get Grade',
-    desc: 'Instant Freshness Index (0-100) generated with storage recommendations.',
+    step: "03",
+    title: "Get Grade",
+    desc: "Instant Freshness Index (0-100) generated with storage recommendations.",
   },
 ];
 
 const faqs = [
   {
-    q: 'How does the dual-stream AI model work?',
-    a: 'FreshScan uses two specialized neural networks in parallel. Stream A is a fine-tuned MobileNetV2 that analyzes the full fish body for overall freshness classification (C1 Fresh / C2 Moderate / C3 Spoiled). Stream B is a custom BiomarkerCNN that inspects micro-regions — eyes and gills — for localized freshness signals. Their outputs are fused with temperature-scaled confidence scoring to produce the final Freshness Index.',
+    q: "How does the dual-stream AI model work?",
+    a: "FreshScan uses two specialized neural networks in parallel. Stream A is a fine-tuned MobileNetV2 that analyzes the full fish body for overall freshness classification (C1 Fresh / C2 Moderate / C3 Spoiled). Stream B is a custom BiomarkerCNN that inspects micro-regions — eyes and gills — for localized freshness signals. Their outputs are fused with temperature-scaled confidence scoring to produce the final Freshness Index.",
   },
   {
-    q: 'What do the freshness grades mean?',
-    a: 'The Freshness Index (0–100) maps to letter grades: A+ (≥92) and A (≥80) are prime quality, B (≥65) is acceptable, C (≥50) is borderline, and D (below 50) is classified as SPOILED. A score of 65+ is the FRESH threshold. The system also estimates how many hours the fish can safely be stored at 0–4°C.',
+    q: "What do the freshness grades mean?",
+    a: "The Freshness Index (0–100) maps to letter grades: A+ (≥92) and A (≥80) are prime quality, B (≥65) is acceptable, C (≥50) is borderline, and D (below 50) is classified as SPOILED. A score of 65+ is the FRESH threshold. The system also estimates how many hours the fish can safely be stored at 0–4°C.",
   },
   {
-    q: 'What is Auto-Scan mode vs. manual scan?',
-    a: 'Auto-Scan accepts a single photo and automatically routes it through a fish-validation gate (CLIP-based) before running both streams. Manual scan mode lets you upload separate Body, Eye, and Gill images for a more granular three-part assessment — useful for advanced users who want to isolate specific biomarkers.',
+    q: "What is Auto-Scan mode vs. manual scan?",
+    a: "Auto-Scan accepts a single photo and automatically routes it through a fish-validation gate (CLIP-based) before running both streams. Manual scan mode lets you upload separate Body, Eye, and Gill images for a more granular three-part assessment — useful for advanced users who want to isolate specific biomarkers.",
   },
   {
-    q: 'What is the Grad-CAM overlay?',
-    a: 'Grad-CAM (Gradient-weighted Class Activation Mapping) generates a heatmap highlighting exactly which regions of your image drove the freshness prediction. High-activation zones on gills, eyes, or scales are overlaid in a jet colormap so you can see what the model is responding to, not just the score it outputs.',
+    q: "What is the Grad-CAM overlay?",
+    a: "Grad-CAM (Gradient-weighted Class Activation Mapping) generates a heatmap highlighting exactly which regions of your image drove the freshness prediction. High-activation zones on gills, eyes, or scales are overlaid in a jet colormap so you can see what the model is responding to, not just the score it outputs.",
   },
   {
-    q: 'What is the Trust Map?',
-    a: 'The Trust Map is a live, crowdsourced heatmap of local fish vendors and markets. Every anonymized scan tied to a vendor location updates that vendor\'s average freshness score and trust rating in the Supabase database. You can use the map to identify consistently high-quality vendors in your area before you buy.',
+    q: "What is the Trust Map?",
+    a: "The Trust Map is a live, crowdsourced heatmap of local fish vendors and markets. Every anonymized scan tied to a vendor location updates that vendor's average freshness score and trust rating in the Supabase database. You can use the map to identify consistently high-quality vendors in your area before you buy.",
   },
 ];
 
@@ -72,19 +81,21 @@ export default function LandingPage() {
 
   useEffect(() => {
     const handleAuthChange = () => setLoggedIn(isAuthenticated());
-    window.addEventListener('auth-change', handleAuthChange);
-    return () => window.removeEventListener('auth-change', handleAuthChange);
+    window.addEventListener("auth-change", handleAuthChange);
+    return () => window.removeEventListener("auth-change", handleAuthChange);
   }, []);
 
   return (
-    <div className="relative">
+    <div id="landing-top" className="relative">
       {/* ── HERO ── */}
       <section className="relative min-h-[90vh] flex flex-col items-center justify-center px-6 md:px-16 lg:px-24 py-20 overflow-hidden text-center">
         <div className="relative z-10 max-w-5xl mx-auto">
           <h1 className="font-headline text-[3.5rem] md:text-[5rem] lg:text-[7rem] leading-[1.05] font-extrabold tracking-tighter text-white mb-8">
             Fish Freshness
             <br />
-            <span className="text-neon italic block mt-2 md:mt-3">*Objectively Graded*</span>
+            <span className="text-neon italic block mt-2 md:mt-3">
+              *Objectively Graded*
+            </span>
           </h1>
 
           <p className="text-on-surface-variant text-base md:text-lg max-w-xl leading-relaxed mb-10 font-[family-name:var(--font-body)] mx-auto">
@@ -160,7 +171,7 @@ export default function LandingPage() {
                   {f.desc}
                 </p>
                 <span className="status-terminal block mt-6 text-[0.5625rem]">
-                  MODULE_{String(i + 1).padStart(2, '0')}: LOADED
+                  MODULE_{String(i + 1).padStart(2, "0")}: LOADED
                 </span>
               </GlassCard>
             ))}
@@ -207,7 +218,7 @@ export default function LandingPage() {
 
           <GlassCard className="mt-8 p-6 md:p-8" variant="glass">
             <p className="text-on-surface-variant text-sm leading-relaxed italic">
-              "FreshScan AI transforms the chaotic wet market into a structured,{' '}
+              "FreshScan AI transforms the chaotic wet market into a structured,{" "}
               <span className="text-neon not-italic font-semibold">
                 transparent ecosystem
               </span>
@@ -240,8 +251,9 @@ export default function LandingPage() {
                   </h4>
                   <ChevronDown
                     size={18}
-                    className={`text-neon shrink-0 transition-transform duration-200 ${openFaq === i ? 'rotate-180' : ''
-                      }`}
+                    className={`text-neon shrink-0 transition-transform duration-200 ${
+                      openFaq === i ? "rotate-180" : ""
+                    }`}
                   />
                 </div>
                 {openFaq === i && (
@@ -267,8 +279,8 @@ export default function LandingPage() {
             <span className="text-neon">Assessment</span>
           </h2>
           <p className="text-on-surface-variant mb-10 max-w-lg mx-auto">
-            Deploy laboratory-grade freshness analysis directly to your mobile device.
-            No subscription. No cloud dependency.
+            Deploy laboratory-grade freshness analysis directly to your mobile
+            device. No subscription. No cloud dependency.
           </p>
           <Link
             to="/scanner"
@@ -279,6 +291,7 @@ export default function LandingPage() {
           </Link>
         </div>
       </section>
+      <BackToTopButton />
     </div>
   );
 }
