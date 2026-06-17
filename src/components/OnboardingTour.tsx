@@ -1,23 +1,25 @@
 import { Joyride, type Step } from "react-joyride";
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   run: boolean;
 }
 
 export default function OnboardingTour({ run }: Props) {
+  const { t } = useTranslation();
   const steps: Step[] = [
     {
       target: "body",
-      content: "Welcome to FreshScanAI! Let's take a quick tour.",
+      content: t('onboarding.welcome'),
       placement: "center",
     },
     {
       target: "a[href='/scanner']",
-      content: "Use Scanner to analyze fish freshness.",
+      content: t('onboarding.scannerTip'),
     },
     {
       target: "a[href='/map']",
-      content: "View market insights and trust map here.",
+      content: t('onboarding.mapTip'),
     },
   ];
 
