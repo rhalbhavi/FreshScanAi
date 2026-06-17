@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Skeleton from "../components/Skeleton";
+import { useTranslation } from 'react-i18next';
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "";
 
@@ -16,32 +17,26 @@ interface Vendor {
   trend: Trend;
 }
 
-const BADGE: Record<Badge, { label: string; color: string }> = {
-  gold: { label: "[ GOLD ]", color: "var(--color-neon-yellow, #f59e0b)" },
-  silver: { label: "[ SILVER ]", color: "var(--color-on-surface, #9ca3af)" },
-  bronze: { label: "[ BRONZE ]", color: "var(--color-neon-orange, #f97316)" },
+const BADGE: Record<Badge, { labelKey: string; color: string }> = {
+  gold: { labelKey: 'leaderboard.badge.gold', color: "var(--color-neon-yellow, #f59e0b)" },
+  silver: { labelKey: 'leaderboard.badge.silver', color: "var(--color-on-surface, #9ca3af)" },
+  bronze: { labelKey: 'leaderboard.badge.bronze', color: "var(--color-neon-orange, #f97316)" },
   unranked: {
-    label: "[ UNRANKED ]",
+    labelKey: 'leaderboard.badge.unranked',
     color: "var(--color-outline-variant, #6b7280)",
   },
 };
 
-const TREND: Record<Trend, { icon: string; color: string; label: string }> = {
-  up: {
-    icon: "^",
-    color: "var(--color-neon-green, #22c55e)",
-    label: "Improving",
-  },
-  down: { icon: "v", color: "var(--color-error, #ef4444)", label: "Declining" },
-  stable: {
-    icon: "-",
-    color: "var(--color-on-surface, #9ca3af)",
-    label: "Stable",
-  },
+const TREND: Record<Trend, { icon: string; color: string; labelKey: string }> = {
+  up: { icon: "^", color: "var(--color-neon-green, #22c55e)", labelKey: 'leaderboard.trend.improving' },
+  down: { icon: "v", color: "var(--color-error, #ef4444)", labelKey: 'leaderboard.trend.declining' },
+  stable: { icon: "-", color: "var(--color-on-surface, #9ca3af)", labelKey: 'leaderboard.trend.stable' },
 };
 
 export default function Leaderboard() {
-  const [vendors, setVendors] = useState<Vendor[]>([]);
+  const { t } = useTranslation();
+
+      const [vendors, setVendors] = useState<Vendor[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -106,15 +101,15 @@ export default function Leaderboard() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
       <h1 className="text-3xl font-bold mb-1 font-display text-on-surface">
-        VENDOR TRUST LEADERBOARD
+        {t('leaderboard.title')}
       </h1>
       <p className="mb-8 text-sm font-mono tracking-widest text-on-surface/60">
-        RANKINGS BASED ON ANONYMOUS FRESHNESS SCANS ACROSS MARKETS
+        {t('leaderboard.subtitle')}
       </p>
 
       {vendors.length === 0 ? (
         <p className="text-on-surface/40 text-center py-20 font-mono">
-          NO VENDOR DATA YET.
+          {t('leaderboard.noVendorData')}
         </p>
       ) : (
         <div className="space-y-3">
@@ -134,7 +129,7 @@ export default function Leaderboard() {
                   className="text-xs font-mono tracking-widest shrink-0"
                   style={{ color: badge.color }}
                 >
-                  {badge.label}
+                  {t(badge.labelKey)}
                 </span>
 
                 <div className="flex-1 min-w-0">
@@ -149,18 +144,16 @@ export default function Leaderboard() {
                 <div className="text-right shrink-0">
                   <p className="text-lg font-bold text-neon font-mono">
                     {(vendor.avg_freshness_score ?? 0).toFixed(1)}
-                    <span className="text-xs font-normal text-on-surface/40">
-                      /100
-                    </span>
+                    <span className="text-xs font-normal text-on-surface/40">{t('ashboard.scorePercentage')}</span>
                   </p>
                   <p className="text-xs text-on-surface/40 font-mono tracking-widest">
-                    {vendor.total_scans ?? 0} SCANS
+                    {vendor.total_scans ?? 0} {t('leaderboard.scans')}
                   </p>
                 </div>
 
                 <span
                   className="text-lg font-bold shrink-0 font-mono"
-                  title={trend.label}
+                  title={t(trend.labelKey)}
                   style={{ color: trend.color }}
                 >
                   {trend.icon}
