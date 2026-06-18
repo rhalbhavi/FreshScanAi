@@ -9,7 +9,6 @@ type Trend = "up" | "down" | "stable";
 interface Vendor {
   id: string;
   name: string;
-  address: string;
   avg_freshness_score: number;
   total_scans: number;
   trust_score: number;
@@ -48,7 +47,7 @@ export default function Leaderboard() {
   useEffect(() => {
     setLoading(true);
     api.getLeaderboard()
-      .then((data) => setVendors((data.leaderboard as Vendor[]) || []))
+      .then((data) => setVendors(data.leaderboard || []))
       .catch((err) => {
         if (err instanceof Error && err.message.startsWith('error.')) {
           setErrorKey(err.message);
@@ -145,9 +144,6 @@ export default function Leaderboard() {
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-on-surface truncate font-display">
                     {vendor.name}
-                  </p>
-                  <p className="text-xs text-on-surface/50 truncate font-mono tracking-widest">
-                    {vendor.address}
                   </p>
                 </div>
 
