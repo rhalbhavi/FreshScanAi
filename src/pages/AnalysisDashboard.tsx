@@ -29,14 +29,6 @@ export default function AnalysisDashboard() {
   const [loading, setLoading] = useState(true);
   const [errorKey, setErrorKey] = useState('');
 
-  const [gradcamImage, setGradcamImage] = useState<string | null>(null);
-  const [gradcamLoading, setGradcamLoading] = useState(false);
-  const [gradcamError, setGradcamError] = useState<string | null>(null);
-  const [blendOpacity, setBlendOpacity] = useState(0.5);
-  const [retryTrigger, setRetryTrigger] = useState(0);
-
-  const photo_url = scan?.photo_url;
-
   useEffect(() => {
     async function load() {
       setLoading(true);
@@ -59,69 +51,6 @@ export default function AnalysisDashboard() {
     }
     load();
   }, [params]);
-
-  useEffect(() => {
-    if (!photo_url) return;
-    const url = photo_url;
-
-    let isMounted = true;
-    const controller = new AbortController();
-
-    async function loadGradcam() {
-      setGradcamImage(null);
-      setGradcamLoading(true);
-      setGradcamError(null);
-
-      try {
-        const res = await fetch(url, {
-          signal: controller.signal,
-        });
-
-        if (!res.ok) {
-          throw new Error(`Failed to download scan image (${res.status})`);
-        }
-
-        const blob = await res.blob();
-        const gradcamRes = await api.getGradcam(blob);
-
-        if (isMounted) {
-          setGradcamImage(gradcamRes.gradcam_image);
-        }
-      } catch (err) {
-        if (
-          err instanceof DOMException &&
-          err.name === "AbortError"
-        ) {
-          return;
-        }
-
-        console.error("Grad-CAM generation error:", err);
-
-        if (isMounted) {
-          setGradcamError(
-            err instanceof Error
-              ? err.message
-              : "Heatmap generation failed."
-          );
-        }
-      } finally {
-        if (isMounted) {
-          setGradcamLoading(false);
-        }
-      }
-    }
-
-    loadGradcam();
-
-    return () => {
-      isMounted = false;
-      controller.abort();
-    };
-  }, [photo_url, retryTrigger]);
-
-  const handleRetry = () => {
-    setRetryTrigger((prev) => prev + 1);
-  };
 
   // ── Loading state ────────────────────────────────────────────────────────
   if (loading) {
@@ -176,7 +105,7 @@ export default function AnalysisDashboard() {
           className="mb-6"
         />
 
-        {/* Score + Species row / Visualization */}
+        {/* Score + Species row */}
         <div className="flex flex-col md:flex-row gap-6 mb-8">
           {/* Main score card */}
           <GlassCard className="flex-1 p-8 relative overflow-hidden" variant="tonal">
@@ -259,50 +188,9 @@ export default function AnalysisDashboard() {
                     {scan.market_name}
                   </span>
                 </div>
-              </GlassCard>
-
-              {/* Species panel */}
-              <GlassCard className="md:w-72 p-6" variant="glass">
-                <span className="font-[family-name:var(--font-mono)] text-[0.625rem] tracking-widest text-on-surface-variant uppercase block mb-4">
-                  Detected_Specimen
-                </span>
-
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {species.tags.map(tag => (
-                    <span
-                      key={tag}
-                      className="bg-surface-highest text-on-surface-variant font-[family-name:var(--font-mono)] text-[0.5625rem] tracking-widest px-3 py-1.5"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-on-surface-variant font-[family-name:var(--font-mono)] text-[0.625rem]">WEIGHT_EST</span>
-                    <span className={`font-[family-name:var(--font-display)] font-semibold ${gradeColor(grade)}`}>
-                      ~{species.weight_estimate_kg} kg
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-on-surface-variant font-[family-name:var(--font-mono)] text-[0.625rem]">CATCH_AGE</span>
-                    <span className={`font-[family-name:var(--font-display)] font-semibold ${gradeColor(grade)}`}>
-                      ~{species.catch_age_hours} hrs
-                    </span>
-                  </div>
-                  {scan.market_name && (
-                    <div className="flex justify-between">
-                      <span className="text-on-surface-variant font-[family-name:var(--font-mono)] text-[0.625rem]">MARKET</span>
-                      <span className={`font-[family-name:var(--font-display)] font-semibold ${gradeColor(grade)}`}>
-                        {scan.market_name}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </GlassCard>
-            </>
-          )}
+              )}
+            </div>
+          </GlassCard>
         </div>
 
         {/* Biomarkers — 3 model-native streams */}
@@ -330,7 +218,7 @@ export default function AnalysisDashboard() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
                         <h4 className="font-[family-name:var(--font-display)] text-sm font-bold">
-                          {t((meta as any).labelKey)}
+                          {t(meta.labelKey)}
                         </h4>
                         <div className="flex items-center gap-3">
                           <span className={`font-[family-name:var(--font-mono)] text-[0.5625rem] tracking-widest ${isAlert ? 'text-error' : 'text-neon-dark'}`}>
