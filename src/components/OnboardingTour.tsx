@@ -46,7 +46,7 @@ export default function OnboardingTour({ run }: Props) {
           boxShadow: "none",
           textAlign: "left",
         },
-        buttonPrimary: {
+        buttonNext: {
           backgroundColor: "#eab308",
           color: "#000000",
           borderRadius: 0,
