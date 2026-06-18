@@ -118,7 +118,7 @@ export default function ScannerPage() {
   const [scanPhase, setScanPhase] = useState<ScanPhase>("idle");
   const [inferenceMode, setInferenceMode] = useState<InferenceMode>(null);
   const [result, setResult] = useState<DisplayResult | null>(null);
-  const [error, setError] = useState("");
+  const [errorKey, setErrorKey] = useState("");
   const [flashOn, setFlashOn] = useState(false);
   const [facingMode, setFacingMode] = useState<"environment" | "user">(
     "environment",
@@ -126,7 +126,7 @@ export default function ScannerPage() {
   const [progress, setProgress] = useState(0);
   const [copied, setCopied] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [cameraError, setCameraError] = useState<string | null>(null);
+  const [cameraErrorKey, setCameraErrorKey] = useState<string | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -152,7 +152,7 @@ export default function ScannerPage() {
           return;
         }
 
-        setCameraError(null);
+        setCameraErrorKey(null);
         streamRef.current = stream;
 
         if (currentVideo) {
@@ -166,14 +166,14 @@ export default function ScannerPage() {
 
         if (err instanceof DOMException) {
           if (err.name === "NotAllowedError") {
-            setCameraError(t('scanner.cameraPermissionDenied'));
+            setCameraErrorKey('scanner.cameraPermissionDenied');
           } else if (err.name === "NotFoundError") {
-            setCameraError(t('scanner.cameraNotFound'));
+            setCameraErrorKey('scanner.cameraNotFound');
           } else {
-            setCameraError(t('scanner.cameraAccessError'));
+            setCameraErrorKey('scanner.cameraAccessError');
           }
         } else {
-          setCameraError(t('scanner.cameraSomethingWrong'));
+          setCameraErrorKey('scanner.cameraSomethingWrong');
         }
       });
 
@@ -186,7 +186,7 @@ export default function ScannerPage() {
         currentVideo.srcObject = null;
       }
     };
-  }, [facingMode, scanPhase]);
+  }, [facingMode, scanPhase, t]);
 
   // ── Progress bar animation ─────────────────────────────────────────────────
   const startProgress = useCallback(() => {
@@ -213,7 +213,7 @@ export default function ScannerPage() {
     async (blob: Blob) => {
       setScanPhase("processing");
       startProgress();
-      setError("");
+      setErrorKey("");
       setInferenceMode(null);
       sessionStorage.removeItem("lastScanId");
 
@@ -283,7 +283,6 @@ export default function ScannerPage() {
                   fused_score: fusion.fusedScore,
                   source: "edge_onnx",
                 },
-                { silent: true },
               );
               if (saved?.scan?.scan_id) {
                 sessionStorage.setItem("lastScanId", saved.scan.scan_id);
@@ -299,19 +298,19 @@ export default function ScannerPage() {
         setTimeout(() => navigate("/analysis"), 1800);
       } catch (err) {
         stopProgress(0);
-        const msg = err instanceof Error ? err.message : t('scanner.inferenceFailed');
+        const msg = err instanceof Error ? err.message : 'scanner.inferenceFailed';
         const isNotFish =
           msg.includes("NOT_A_FISH") ||
           msg.includes("not appear to contain a fish");
-        setError(
+        setErrorKey(
           isNotFish
-            ? t('scanner.notFishDetected')
-            : msg || t('scanner.inferenceFailed'),
+            ? 'scanner.notFishDetected'
+            : msg || 'scanner.inferenceFailed',
         );
         setScanPhase("error");
       }
     },
-    [startProgress, stopProgress, stopCamera, navigate],
+    [startProgress, stopProgress, stopCamera, navigate, t],
   );
 
   // ── Camera capture ─────────────────────────────────────────────────────────
@@ -324,7 +323,7 @@ export default function ScannerPage() {
     if (!video) return;
     const blob = await captureVideoBlob(video);
     if (!blob) {
-      setError(t('scanner.failedCaptureFrame'));
+      setErrorKey('scanner.failedCaptureFrame');
       return;
     }
     await runScan(blob);
@@ -353,7 +352,7 @@ export default function ScannerPage() {
   const resetScan = useCallback(() => {
     setScanPhase("idle");
     setResult(null);
-    setError("");
+    setErrorKey("");
     setInferenceMode(null);
     setProgress(0);
     if (previewUrl) {
@@ -381,7 +380,7 @@ export default function ScannerPage() {
       return [t('scanner.modelEdgeOnnx'), t('scanner.deviceOnDevice'), t('scanner.latencyValue')];
     if (scanComplete && inferenceMode === "cloud")
       return [t('scanner.modelCloudApi'), t('scanner.deviceHfInference')];
-    if (scanPhase === "error") return [t('scanner.scanSeqFailed'), t('scanner.checkSpecimen')];
+    if (scanPhase === "error") return [t('scanner.scanSeqFailed'), errorKey ? t(errorKey) : t('scanner.checkSpecimen')];
     return [t('scanner.systemReady'), t('scanner.pointCameraAtFish')];
   })();
 
@@ -398,14 +397,14 @@ export default function ScannerPage() {
               alt={t('scanner.capturedAlt')}
               className="absolute inset-0 w-full h-full object-contain z-0 bg-surface-lowest"
             />
-          ) : cameraError ? (
+          ) : cameraErrorKey ? (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-black px-6 text-center text-white">
               <div className="max-w-sm">
                 <h3 className="mb-2 text-lg font-semibold">
                   {t('scanner.cameraAccessNeeded')}
                 </h3>
 
-                <p className="text-sm text-gray-300">{cameraError}</p>
+                <p className="text-sm text-gray-300">{t(cameraErrorKey)}</p>
 
                 <p className="mt-3 text-xs text-gray-400">
                   {t('scanner.cameraInstructions')}
@@ -452,7 +451,7 @@ export default function ScannerPage() {
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
               {scanPhase === "idle" && (
                 <>
-                  {!cameraError && (
+                  {!cameraErrorKey && (
                     <span className="font-[family-name:var(--font-mono)] text-[0.625rem] tracking-widest text-on-surface-variant">
                       {t('scanner.pointAtFish')}
                     </span>
@@ -478,7 +477,7 @@ export default function ScannerPage() {
               )}
               {scanPhase === "error" && (
                 <span className="font-[family-name:var(--font-mono)] text-[0.55rem] tracking-widest text-error text-center px-6">
-                  {error}
+                  {t(errorKey)}
                 </span>
               )}
             </div>
@@ -645,7 +644,7 @@ export default function ScannerPage() {
             {scanPhase === "error" && (
               <div className="flex gap-3 mb-4">
                 <span className="flex-1 font-[family-name:var(--font-mono)] text-[0.55rem] tracking-widest text-error self-center">
-                  {error}
+                  {t(errorKey)}
                 </span>
                 <button
                   onClick={resetScan}
