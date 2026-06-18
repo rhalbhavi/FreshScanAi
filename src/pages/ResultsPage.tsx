@@ -13,7 +13,7 @@ export default function ResultsPage() {
       const [scans, setScans] = useState<HistoryScan[]>([]);
   const [stats, setStats] = useState<HistoryStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [errorKey, setErrorKey] = useState('');
 
   useEffect(() => {
     async function load() {
@@ -23,7 +23,14 @@ export default function ResultsPage() {
         setScans(res.scans);
         setStats(res.stats);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load history.');
+        // Use the same robust error handling as other pages - Ensures that both API keys (like 'error.network.connection') and generic errors are translated correctly.
+        if (err instanceof Error && err.message.startsWith('error.')) {
+          setErrorKey(err.message);
+        } else {
+          // Fallback for other errors, including raw "Failed to fetch"
+          setErrorKey('results.failedToLoadHistory');
+        }
+        console.error("History fetch error:", err);
       } finally {
         setLoading(false);
       }
@@ -39,12 +46,12 @@ export default function ResultsPage() {
     );
   }
 
-  if (error) {
+  if (errorKey) {
     return (
       <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center gap-4 px-6">
         <StatusTerminal messages={[t('results.historyLoadFailed')]} />
         <p className="text-error font-[family-name:var(--font-mono)] text-xs tracking-widest">
-          {error}
+          {t(errorKey)}
         </p>
         <Link
           to="/auth"
@@ -181,3 +188,4 @@ export default function ResultsPage() {
     </div>
   );
 }
+
