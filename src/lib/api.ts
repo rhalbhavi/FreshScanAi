@@ -117,9 +117,19 @@ export interface GradcamResponse {
   class_index: number;
   mode: "real" | "demo";
 }
+
+export interface LeaderboardEntry {
+  id: string;
+  name: string;
+  trust_score: number;
+  total_scans: number;
+  avg_freshness_score: number;
+  lat: number;
+  lng: number;
+}
 export interface LeaderboardResponse {
   success: boolean;
-  leaderboard: any[];
+  leaderboard: LeaderboardEntry[];
 }
 
 // Metadata sent alongside edge-inference results so the backend can store them
