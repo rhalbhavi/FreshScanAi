@@ -28,6 +28,7 @@ export default function OnboardingTour({ run }: Props) {
       steps={steps}
       run={run}
       continuous
+      showProgress
       styles={{
         options: {
           zIndex: 10000,
@@ -35,7 +36,6 @@ export default function OnboardingTour({ run }: Props) {
           backgroundColor: "#111111",
           textColor: "#ffffff",
           arrowColor: "#111111",
-          showProgress: true,
         },
         tooltip: {
           borderRadius: 0,
