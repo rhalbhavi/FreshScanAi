@@ -27,12 +27,12 @@ export default function AnalysisDashboard() {
       const [params] = useSearchParams();
   const [scan, setScan] = useState<ScanResult | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [errorKey, setErrorKey] = useState('');
 
   useEffect(() => {
     async function load() {
       setLoading(true);
-      setError('');
+      setErrorKey('');
       try {
         const idParam = params.get('id');
         const lastId = sessionStorage.getItem('lastScanId');
@@ -44,7 +44,7 @@ export default function AnalysisDashboard() {
 
         setScan(res.scan);
       } catch (err) {
-        setError(err instanceof Error ? err.message : t('dashboard.noDataMessage'));
+        setErrorKey(err instanceof Error ? err.message : 'dashboard.noDataMessage');
       } finally {
         setLoading(false);
       }
@@ -62,12 +62,12 @@ export default function AnalysisDashboard() {
   }
 
   // ── Error state ──────────────────────────────────────────────────────────
-  if (error || !scan) {
+  if (errorKey || !scan) {
     return (
       <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center gap-6 px-6">
         <StatusTerminal messages={[t('dashboard.loadFailed'), t('dashboard.noData')]} />
         <p className="text-error font-[family-name:var(--font-mono)] text-xs tracking-widest text-center">
-          {error || t('dashboard.noDataMessage')}
+          {errorKey ? t(errorKey) : t('dashboard.noDataMessage')}
         </p>
         <Link
           to="/scanner"
