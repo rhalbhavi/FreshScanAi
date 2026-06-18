@@ -2,8 +2,8 @@ import { Link } from 'react-router-dom';
 import { isAuthenticated } from '../lib/api';
 import { Zap, Eye, MapPin, ScanLine, Target, Award, ChevronDown } from 'lucide-react';
 import GlassCard from '../components/GlassCard';
-import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useState, useEffect } from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 export default function LandingPage() {
   const { t } = useTranslation();
@@ -193,11 +193,12 @@ export default function LandingPage() {
 
           <GlassCard className="mt-8 p-6 md:p-8" variant="glass">
             <p className="text-on-surface-variant text-sm leading-relaxed italic">
-              "FreshScan AI transforms the chaotic wet market into a structured,{' '}
-              <span className="text-neon not-italic font-semibold">
-                transparent ecosystem
-              </span>
-              ."
+              "
+              <Trans
+                i18nKey="landing.heroDescription"
+                components={{ 1: <span className="text-neon not-italic font-semibold" /> }}
+              />
+              "
             </p>
           </GlassCard>
         </div>
