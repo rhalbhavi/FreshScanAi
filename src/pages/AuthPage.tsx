@@ -24,9 +24,9 @@ export default function AuthPage() {
     return 'idle';
   });
 
-  const [errorMsg, setErrorMsg] = useState(() => {
+  const [errorKey, setErrorKey] = useState(() => {
     const params = new URLSearchParams(window.location.search);
-    return params.get('error') ? t('auth.authFailed') : '';
+    return params.get('error') ? 'auth.authFailed' : '';
   });
 
   // Handle redirect from backend OAuth callback
@@ -76,10 +76,10 @@ export default function AuthPage() {
       window.location.href = loginUrl;
     } catch (err) {
       setStatus('error');
-      setErrorMsg(
+      setErrorKey(
         err instanceof Error
           ? err.message
-          : 'Could not initiate Google Login. Please check your network connection.'
+          : 'error.network.connection' // A more generic, translatable key
       );
       console.error('Auth initiation failed:', err);
     }
@@ -120,7 +120,7 @@ export default function AuthPage() {
 
           {status === 'error' && (
             <p className="text-error text-sm mt-4 font-[family-name:var(--font-mono)]">
-              {errorMsg}
+              {errorKey && t(errorKey)}
             </p>
           )}
 
