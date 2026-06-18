@@ -9,7 +9,7 @@
     "dev:frontend": "vite",
     "dev:backend": "node -e \"const {execSync}=require('child_process');const cmd=process.platform==='win32'?'scripts\\\\start-backend.bat':'sh scripts/start-backend.sh';execSync(cmd,{stdio:'inherit',shell:true})\"",
     "build": "tsc -b && vite build",
-    "lint": "cross-env ESLINT_USE_FLAT_CONFIG=false eslint .",
+    "lint": "eslint .",
     "preview": "vite preview",
     "supabase:start": "cd backend && supabase start",
     "supabase:stop": "cd backend && supabase stop",
@@ -53,4 +53,3 @@
     "workbox-window": "^7.1.0"
   }
 }
-
