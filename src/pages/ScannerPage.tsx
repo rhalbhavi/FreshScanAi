@@ -309,8 +309,7 @@ export default function ScannerPage() {
         );
         setScanPhase("error");
       }
-    },
-    [startProgress, stopProgress, stopCamera, navigate, t],
+    }, [startProgress, stopProgress, stopCamera, navigate]
   );
 
   // ── Camera capture ─────────────────────────────────────────────────────────
