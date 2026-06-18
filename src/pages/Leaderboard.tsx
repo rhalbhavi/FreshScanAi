@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import Skeleton from "../components/Skeleton";
 import { useTranslation } from 'react-i18next';
-
-const API_BASE = import.meta.env.VITE_API_URL ?? "";
+import { api } from "../lib/api";
 
 type Badge = "gold" | "silver" | "bronze" | "unranked";
 type Trend = "up" | "down" | "stable";
@@ -13,8 +12,7 @@ interface Vendor {
   address: string;
   avg_freshness_score: number;
   total_scans: number;
-  trust_badge: Badge;
-  trend: Trend;
+  trust_score: number;
 }
 
 const BADGE: Record<Badge, { labelKey: string; color: string }> = {
@@ -38,16 +36,27 @@ export default function Leaderboard() {
 
       const [vendors, setVendors] = useState<Vendor[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [errorKey, setErrorKey] = useState<string | null>(null);
+
+  const getBadgeFromScore = (score: number): Badge => {
+    if (score >= 90) return 'gold';
+    if (score >= 80) return 'silver';
+    if (score >= 70) return 'bronze';
+    return 'unranked';
+  };
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/v1/vendors/leaderboard`)
-      .then((r) => {
-        if (!r.ok) throw new Error("Failed to fetch leaderboard.");
-        return r.json();
+    setLoading(true);
+    api.getLeaderboard()
+      .then((data) => setVendors((data.leaderboard as Vendor[]) || []))
+      .catch((err) => {
+        if (err instanceof Error && err.message.startsWith('error.')) {
+          setErrorKey(err.message);
+        } else {
+          setErrorKey('leaderboard.failedFetchLeaderboard');
+        }
+        console.error("Leaderboard fetch error:", err);
       })
-      .then((data) => setVendors(data.leaderboard || []))
-      .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, []);
 
@@ -91,10 +100,10 @@ export default function Leaderboard() {
       </div>
     );
 
-  if (error)
+  if (errorKey)
     return (
       <div className="flex items-center justify-center min-h-screen text-error">
-        {error}
+        {t(errorKey)}
       </div>
     );
 
@@ -114,8 +123,9 @@ export default function Leaderboard() {
       ) : (
         <div className="space-y-3">
           {vendors.map((vendor, index) => {
-            const badge = BADGE[vendor.trust_badge ?? "unranked"];
-            const trend = TREND[vendor.trend ?? "stable"];
+            const badgeType = getBadgeFromScore(vendor.trust_score ?? 0);
+            const badge = BADGE[badgeType];
+            const trend = TREND['stable']; // Trend data is not available from the API
             return (
               <div
                 key={vendor.id}
