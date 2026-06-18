@@ -193,12 +193,12 @@ export default function LandingPage() {
 
           <GlassCard className="mt-8 p-6 md:p-8" variant="glass">
             <p className="text-on-surface-variant text-sm leading-relaxed italic">
-              "
+              &ldquo;
               <Trans
                 i18nKey="landing.heroDescription"
                 components={{ 1: <span className="text-neon not-italic font-semibold" /> }}
               />
-              "
+              &rdquo;
             </p>
           </GlassCard>
         </div>
@@ -265,7 +265,7 @@ export default function LandingPage() {
           </Link>
         </div>
       </section>
-      <BackToTopButton />
+      {/* <BackToTopButton /> */}
     </div>
   );
 }
