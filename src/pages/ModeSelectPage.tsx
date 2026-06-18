@@ -48,10 +48,10 @@ const CLASS_META: Record<number, { labelKey: string; colour: string; bg: string 
 
 function GradCamViewer() {
   const { t } = useTranslation();
-    const [originalSrc, setOriginalSrc] = useState<string | null>(null);
+  const [originalSrc, setOriginalSrc] = useState<string | null>(null);
   const [result, setResult] = useState<GradcamResponse | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errorKey, setErrorKey] = useState<string | null>(null);
   const [notAFish, setNotAFish] = useState(false);
   const [dragging, setDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -59,7 +59,7 @@ function GradCamViewer() {
   // Process a File object — show preview & call API
   const processFile = useCallback(async (file: File) => {
     if (!file.type.startsWith('image/')) {
-      setError(t('gradcam.invalidFileError', 'Please upload a valid image file (JPEG / PNG / WebP).'));
+      setErrorKey('gradcam.invalidFileError');
       return;
     }
 
@@ -69,7 +69,7 @@ function GradCamViewer() {
     reader.readAsDataURL(file);
 
     setLoading(true);
-    setError(null);
+    setErrorKey(null);
     setResult(null);
     setNotAFish(false);
 
@@ -78,22 +78,32 @@ function GradCamViewer() {
       const res = await api.getGradcam(blob);
       setResult(res);
     } catch (err: unknown) {
+      // Centralized and robust error handling.
+      // We determine the correct translation key first, then translate and set the error.
+      let errorKey = 'error.unknown';
+      let shouldSetError = true;
+
       if (err instanceof Error) {
         const msg = err.message;
-        if (msg.startsWith('NOT_A_FISH')) {
-          setNotAFish(true);
-          // keep originalSrc so user can see what they uploaded
+
+        if (msg.startsWith('error.')) {
+          // Ideal path: The API layer provided a specific translation key.
+          errorKey = msg;
         } else if (msg.toLowerCase().includes('failed to fetch')) {
-          setError(t('error.network.connection', 'Connection failed. Please check your internet and try again.'));
-        } else {
-          // For other unknown errors, show a generic message and log the original.
-          setError(t('error.unknown', 'An unexpected error occurred. Please try again.'));
-          console.error('Grad-CAM processing error:', err);
+          // Fallback for raw network errors that weren't caught by the API layer.
+          errorKey = 'error.network.connection';
+        } else if (msg.startsWith('NOT_A_FISH')) {
+          setNotAFish(true);
+          shouldSetError = false; // Don't show a generic error for this specific case.
         }
       } else {
-        // Non-Error exception, show generic message and log it.
-        setError(t('gradcam.generationFailedError', 'Grad-CAM generation failed.'));
+        // This handles non-Error exceptions.
+        errorKey = 'gradcam.generationFailedError';
         console.error('Grad-CAM processing non-error thrown:', err);
+      }
+
+      if (shouldSetError) {
+        setErrorKey(errorKey);
       }
     } finally {
       setLoading(false);
@@ -117,7 +127,7 @@ function GradCamViewer() {
   const reset = () => {
     setOriginalSrc(null);
     setResult(null);
-    setError(null);
+    setErrorKey(null);
     setNotAFish(false);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
@@ -239,11 +249,11 @@ function GradCamViewer() {
       )}
 
       {/* Generic error state */}
-      {error && !loading && (
+      {errorKey && !loading && (
         <div className="flex items-start gap-3 p-4 bg-red-500/10 border border-red-500/30 mt-2">
           <AlertTriangle size={18} className="text-red-400 shrink-0 mt-0.5" />
           <div className="flex-1 min-w-0">
-            <p className="text-red-400 text-sm font-[family-name:var(--font-mono)]">{error}</p>
+            <p className="text-red-400 text-sm font-[family-name:var(--font-mono)]">{t(errorKey)}</p>
           </div>
           <button
             onClick={reset}
