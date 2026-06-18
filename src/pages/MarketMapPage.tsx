@@ -64,7 +64,7 @@ export default function MarketMapPage() {
       const [markers, setMarkers] = useState<Market[]>([]);
   const [selected, setSelected] = useState<Market | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [errorKey, setErrorKey] = useState("");
   const [tileUrl, setTileUrl] = useState(getActiveTile);
   const [mapCenter, setMapCenter] = useState<[number, number]>([22.5726, 88.3639]);
   const [regionName, setRegionName] = useState("KOLKATA");
@@ -86,7 +86,12 @@ export default function MarketMapPage() {
         const res = await api.getLiveMarkets(lat, lng);
         setMarkers(res.markets || []);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load live market data.");
+        // Handle translatable error keys from the API, with a specific fallback for this page.
+        if (err instanceof Error && err.message.startsWith('error.')) {
+          setErrorKey(err.message);
+        } else {
+          setErrorKey('marketMap.failedLoadMarketData');
+        }
         console.error("Live market fetch error:", err);
       } finally {
         setLoading(false);
@@ -105,16 +110,16 @@ export default function MarketMapPage() {
         (err) => {
           console.warn("Geolocation denied or failed, falling back to mock data.", err);
           api.getMarkets()
-            .then(res => setMarkers(res.markets))
-            .catch(() => setError("Failed to load markets."))
+            .then(res => setMarkers(res.markets || []))
+            .catch(() => setErrorKey('marketMap.failedLoadMarkets'))
             .finally(() => setLoading(false));
         },
         { timeout: 10000, enableHighAccuracy: false }
       );
     } else {
       api.getMarkets()
-        .then(res => setMarkers(res.markets))
-        .catch(() => setError("Failed to load markets."))
+        .then(res => setMarkers(res.markets || []))
+        .catch(() => setErrorKey('marketMap.failedLoadMarkets'))
         .finally(() => setLoading(false));
     }
   }, []);
@@ -127,7 +132,7 @@ export default function MarketMapPage() {
           messages={[
             t('marketMap.trustMapTerminal'),
             `${t('marketMap.regionPrefix')}${regionName}`,
-            loading ? t('marketMap.syncingDb') : error ? t('marketMap.loadError') : `${t('marketMap.nodesPrefix')}${markers.length}`,
+            loading ? t('marketMap.syncingDb') : errorKey ? t('marketMap.loadError') : `${t('marketMap.nodesPrefix')}${markers.length}`,
           ]}
           className="mb-3"
         />
@@ -183,9 +188,9 @@ export default function MarketMapPage() {
 
       {/* Bottom panel */}
       <div className="bg-surface-low px-6 md:px-16 py-6 z-20">
-        {error && (
+        {errorKey && (
           <p className="text-error font-mono text-xs tracking-widest text-center mb-4">
-            {error}
+            {t(errorKey)}
           </p>
         )}
 
