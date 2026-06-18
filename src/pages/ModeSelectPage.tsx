@@ -108,7 +108,7 @@ function GradCamViewer() {
     } finally {
       setLoading(false);
     }
-  }, [t]);
+  }, []);
 
   // Drag-and-drop handlers
   const onDragOver = (e: React.DragEvent) => { e.preventDefault(); setDragging(true); };
