@@ -1,4 +1,4 @@
-import { Joyride, type Step } from "react-joyride";
+import Joyride, { type Step } from "react-joyride";
 import { useTranslation } from 'react-i18next';
 
 interface Props {
@@ -29,6 +29,17 @@ export default function OnboardingTour({ run }: Props) {
       run={run}
       continuous
       styles={{
+        options: {
+          zIndex: 10000,
+          primaryColor: "#eab308",
+          backgroundColor: "#111111",
+          textColor: "#ffffff",
+          arrowColor: "#111111",
+          showProgress: true,
+        },
+        tooltip: {
+          borderRadius: 0,
+        },
         tooltipContainer: {
           border: "3px solid #eab308",
           borderRadius: 0,
@@ -46,17 +57,6 @@ export default function OnboardingTour({ run }: Props) {
         buttonSkip: {
           color: "#ffffff",
         },
-        tooltip: {
-          borderRadius: 0,
-        },
-      }}
-      options={{
-        showProgress: true,
-        buttons: ["back", "close", "primary", "skip"],
-        primaryColor: "#eab308",
-        backgroundColor: "#111111",
-        textColor: "#ffffff",
-        zIndex: 10000,
       }}
     />
   );
