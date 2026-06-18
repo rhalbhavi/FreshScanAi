@@ -1,23 +1,31 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import tseslint from 'typescript-eslint'
-import { defineConfig, globalIgnores } from 'eslint/config'
-
-export default defineConfig([
-  globalIgnores(['dist', '**/._*']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      js.configs.recommended,
-      tseslint.configs.recommended,
-      reactHooks.configs.flat.recommended,
-      reactRefresh.configs.vite,
-    ],
-    languageOptions: {
-      ecmaVersion: 2020,
-      globals: globals.browser,
+module.exports = {
+  root: true,
+  env: { browser: true, es2020: true, node: true },
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:react-hooks/recommended',
+    'plugin:react/recommended',
+  ],
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+    ecmaFeatures: {
+      jsx: true,
     },
   },
-])
+  settings: {
+    react: {
+      version: 'detect',
+    },
+  },
+  plugins: ['react-refresh'],
+  rules: {
+    'react/react-in-jsx-scope': 'off',
+    'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+    // Warn on `any` types to align with CONTRIBUTING.md
+    '@typescript-eslint/no-explicit-any': 'warn',
+  },
+  ignorePatterns: ['dist', '.eslintrc.cjs', 'node_modules/', 'backend/', 'public/', 'scripts/'],
+};
