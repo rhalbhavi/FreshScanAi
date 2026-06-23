@@ -55,6 +55,15 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
+    // Exclude large directories from file watching to prevent ENOSPC errors.
+    // The .venv and node_modules directories contain thousands of files that
+    // do not need to be watched for changes during development.
+    watch: {
+      ignored: [
+        '**/.venv/**',
+        '**/node_modules/**',
+        '**/src/assets/**',
+      ],
+    },
   },
 });
-
