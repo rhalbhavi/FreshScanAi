@@ -11,6 +11,9 @@ from turnstile import TURNSTILE_SECRET_KEY, verify_turnstile_token
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 from rate_limiter import limiter
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.inmemory import InMemoryBackend
+from fastapi_cache.decorator import cache
 
 
 # Load .env file if present (python-dotenv)
@@ -93,6 +96,7 @@ async def lifespan(app: FastAPI):
             f"WARNING: Model files not found at {MODEL_DIR}. "
             "Scan endpoints will return 503 until models are present."
         )
+    FastAPICache.init(InMemoryBackend(), prefix="freshscanai-cache")
     yield
 
 
@@ -768,31 +772,35 @@ async def get_vendor_leaderboard():
 # ── MAP ───────────────────────────────────────────────────────────────────────
 
 
+@cache(expire=300, namespace="markets")
+async def _get_markets_cached() -> dict:
+    resp = (
+        _db()
+        .table("vendors")
+        .select("id, name, avg_freshness_score, trust_score, lat, lng, vendor_count")
+        .execute()
+    )
+    markets = [
+        {
+            "id": i + 1,
+            "name": v["name"],
+            "score": int(v.get("avg_freshness_score") or v.get("trust_score") or 0),
+            "lat": float(v.get("lat") or 0),
+            "lng": float(v.get("lng") or 0),
+            "vendors": int(v.get("vendor_count") or 1),
+        }
+        for i, v in enumerate(resp.data or [])
+        if v.get("lat") and v.get("lng")
+    ]
+    return {"success": True, "markets": markets}
+
+
 @app.get("/api/v1/maps/markets")
 @limiter.limit("20/minute")
 async def get_markets(request: Request):
     try:
-        resp = (
-            _db()
-            .table("vendors")
-            .select("id, name, avg_freshness_score, trust_score, lat, lng, vendor_count")
-            .execute()
-        )
-        markets = [
-            {
-                "id": i + 1,
-                "name": v["name"],
-                "score": int(v.get("avg_freshness_score") or v.get("trust_score") or 0),
-                "lat": float(v.get("lat") or 0),
-                "lng": float(v.get("lng") or 0),
-                "vendors": int(v.get("vendor_count") or 1),
-            }
-            for i, v in enumerate(resp.data or [])
-            if v.get("lat") and v.get("lng")
-        ]
-        return {"success": True, "markets": markets}
+        return await _get_markets_cached()
     except Exception:
-        # Migration not applied yet — return empty markets, map still renders
         return {
             "success": True,
             "markets": [],
