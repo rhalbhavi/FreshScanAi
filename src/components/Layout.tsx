@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import Navbar from './Navbar';
 import BottomNav from './BottomNav';
 import Footer from './Footer';
+import ChatAssistant from './ChatAssistant';
 
 export default function Layout() {
   const { t } = useTranslation();
@@ -33,6 +34,9 @@ export default function Layout() {
 
       {/* Mobile Bottom Nav */}
       <BottomNav />
+
+      {/* AI Chat Assistant */}
+      <ChatAssistant />
     </div>
   );
 }

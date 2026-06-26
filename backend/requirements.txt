@@ -12,3 +12,5 @@ pytest>=8.0.0
 torch>=2.2.0
 torchvision>=0.27.0
 slowapi==0.1.9  # rate limiting for FastAPI; added for per-user scan endpoint throttling
+
+fastapi-cache2==0.2.2
