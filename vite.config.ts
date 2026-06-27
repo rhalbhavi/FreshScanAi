@@ -62,7 +62,6 @@ export default defineConfig({
       ignored: [
         '**/.venv/**',
         '**/node_modules/**',
-        '**/src/assets/**',
       ],
     },
   },

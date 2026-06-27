@@ -69,7 +69,7 @@ export default function Navbar() {
         <Link to="/" className="flex items-center gap-3 no-underline">
           <img
             src="/fish.gif"
-            alt={t('navbar.profile')}
+            alt=""
             className="w-9 h-9 object-contain"
             style={{ imageRendering: 'auto' }}
           />
@@ -122,11 +122,11 @@ export default function Navbar() {
                 {profile?.avatar_url ? (
                   <img src={profile.avatar_url} referrerPolicy="no-referrer" alt="Profile" className="w-7 h-7 object-cover grayscale-[0.5] contrast-125 border border-neon/30" />
                 ) : (
-                  <div className="w-7 h-7 bg-surface-highest flex items-center justify-center text-neon text-xs font-bold font-[family-name:var(--font-display)]">
-                    {profile?.full_name?.charAt(0) || t('navbar.devLogin')}
+                  <div className="w-7 h-7 bg-surface-highest flex items-center justify-center text-neon text-xs font-bold font-[family-name:var(--font-display)]" title={profile?.full_name || t('navbar.devLogin')}>
+                    {(profile?.full_name || t('navbar.devLogin')).charAt(0)}
                   </div>
                 )}
-                <span className="text-xs sm:text-sm font-[family-name:var(--font-mono)] tracking-wider mr-1 uppercase truncate max-w-[60px] sm:max-w-[100px] inline-block align-bottom" title={profile?.full_name?.split(' ')[0] || 'DEV'}>
+                <span className="text-xs sm:text-sm font-[family-name:var(--font-mono)] tracking-wider mr-1 uppercase truncate max-w-[60px] sm:max-w-[100px] inline-block align-bottom" title={profile?.full_name?.split(' ')[0] || t('navbar.devLogin')}>
                   {profile?.full_name ? profile.full_name.split(' ')[0] : t('navbar.devLogin')}
                 </span>
               </button>

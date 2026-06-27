@@ -57,7 +57,7 @@
     "q1": "How does the dual-stream AI model work?",
     "a1": "FreshScan uses two specialized neural networks in parallel. Stream A (MobileNetV2) analyzes the full fish body for overall freshness classification while Stream B (BiomarkerCNN) inspects micro-regions like eyes and gills. Their outputs are fused to produce the final Freshness Index.",
     "q2": "What do the freshness grades mean?",
-    "a2": "The Freshness Index (0-100) maps to letter grades: A+ (≥92), A (≥80), B (≥65), C (≥50), D (&lt;50). Higher scores indicate better preservation and longer safe storage windows.",
+    "a2": "The Freshness Index (0-100) maps to letter grades: A+ (≥92), A (≥80), B (≥65), C (≥50), D (<50). Higher scores indicate better preservation and longer safe storage windows.",
     "q3": "What is Auto-Scan mode vs. manual scan?",
     "a3": "Auto-Scan accepts a single photo and runs validation and both model streams automatically. Manual scan allows uploading separate Body, Eye, and Gill images for a more granular assessment.",
     "q4": "What is the Grad-CAM overlay?",
@@ -193,7 +193,7 @@
     "marketTrustTitle": "Market Trust ",
     "mapTitle": "Map",
     "leaderboardLink": "LEADERBOARD",
-    "selectMarketNode": "Select Market Mode",
+    "selectMarketNode": "Select Market Node",
     "highTrust": "HIGH (85+)",
     "mediumTrust": "MED (70-84)",
     "lowTrust": "LOW (<70)",
@@ -219,8 +219,8 @@
     "scorePercentage": "/100",
     "scansLabel": "SCANS",
     "scans": "Scans",
-    "subtitle": "Subtitle",
-    "title": "Title"
+    "subtitle": "RANKINGS BASED ON ANONYMOUS FRESHNESS SCANS ACROSS MARKETS",
+    "title": "VENDOR TRUST LEADERBOARD"
   },
   "modeSelect": {
     "individual": {
@@ -290,13 +290,10 @@
     "verifyScanId": "VERIFY SCAN ID",
     "fetchingData": "FETCHING DATA",
     "standby": "STANDBY...",
-    "freshscanBrand": "FreshScan ",
-    "publicReport": "Public Report",
-    "generatedPrefix": "GENERATED: ",
-    "idPrefix": "ID: ",
+    "title": "FreshScan <1>Public Report</1>",
+    "metadata": "GENERATED: {{createdAt}} — ID: {{id}}",
     "freshnessScore": "FRESHNESS SCORE",
-    "gradeBadge": "GRADE ",
-    "separator": "—",
+    "gradeDetails": "GRADE {{grade}} — {{label}}",
     "rawMarkers": "RAW MARKERS",
     "copiedClipboard": "COPIED TO CLIPBOARD",
     "copyShareLink": "COPY SHARE LINK",
@@ -308,6 +305,15 @@
     "pageNotFound": "Page Not Found",
     "errorMessage": "Oops! The page you are looking for doesn't exist or has been moved.",
     "returnHome": "Return Home"
+  },
+  "installPrompt": {
+    "iosMsg": "Add FreshScan AI to your Home Screen for one-tap fish freshness analysis. Tap Share and select Add to Home Screen.",
+    "androidMsg": "Add FreshScan AI to your home screen for instant fish freshness analysis in one tap.",
+    "alt": "Animated fish gif",
+    "brand": "FreshScan AI",
+    "installAppTitle": "Install App",
+    "installButton": "Install",
+    "notNow": "Not Now"
   },
   "components": {
     "bottomNav": {

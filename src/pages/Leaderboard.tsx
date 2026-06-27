@@ -150,7 +150,7 @@ export default function Leaderboard() {
                 <div className="text-right shrink-0">
                   <p className="text-lg font-bold text-neon font-mono">
                     {(vendor.avg_freshness_score ?? 0).toFixed(1)}
-                    <span className="text-xs font-normal text-on-surface/40">{t('ashboard.scorePercentage')}</span>
+                    <span className="text-xs font-normal text-on-surface/40">{t('leaderboard.scorePercentage')}</span>
                   </p>
                   <p className="text-xs text-on-surface/40 font-mono tracking-widest">
                     {vendor.total_scans ?? 0} {t('leaderboard.scans')}

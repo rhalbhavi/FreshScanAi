@@ -21,6 +21,10 @@ i18n
       hi: { translation: hi },
       bn: { translation: bn },
     },
+    detection: {
+      order: ["localStorage", "navigator"],
+      caches: ["localStorage"],
+    },
   });
 
 export default i18n;

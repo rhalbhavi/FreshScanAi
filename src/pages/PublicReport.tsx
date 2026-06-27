@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import StatusTerminal from '../components/StatusTerminal';
 
 interface ScanData {
@@ -61,10 +61,12 @@ export default function PublicReport() {
         {/* Header */}
         <div className="border-b border-outline-variant/30 pb-6 mb-8 print:border-black">
           <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight uppercase">
-            {t('publicReport.freshscanBrand')}<span className="text-neon print:text-black">{t('publicReport.publicReport')}</span>
+            <Trans i18nKey="publicReport.title">
+              FreshScan <span className="text-neon print:text-black">Public Report</span>
+            </Trans>
           </h1>
           <p className="font-mono text-[0.65rem] tracking-widest text-on-surface-variant mt-2 uppercase">
-            {t('publicReport.generatedPrefix')}{new Date(scan.created_at).toLocaleString()} {t('publicReport.separator')} {t('publicReport.idPrefix')}{scan.id}
+            {t('publicReport.metadata', { createdAt: new Date(scan.created_at).toLocaleString(), id: scan.id })}
           </p>
         </div>
 
@@ -76,7 +78,7 @@ export default function PublicReport() {
           </p>
           <div className="inline-block border border-outline-variant/30 px-4 py-2 bg-surface-lowest">
             <p className="font-mono text-xs tracking-widest uppercase">
-              {t('publicReport.gradeBadge')}{scan.grade} {t('publicReport.separator')} {scan.label}
+              {t('publicReport.gradeDetails', { grade: scan.grade, label: scan.label })}
             </p>
           </div>
         </div>

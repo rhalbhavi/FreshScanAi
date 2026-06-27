@@ -47,18 +47,26 @@ export default function ResultsPage() {
   }
 
   if (errorKey) {
+    const isAuthError = errorKey.includes('auth');
     return (
       <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center gap-4 px-6">
         <StatusTerminal messages={[t('results.historyLoadFailed')]} />
         <p className="text-error font-[family-name:var(--font-mono)] text-xs tracking-widest">
           {t(errorKey)}
         </p>
-        <Link
-          to="/auth"
-          className="text-neon font-[family-name:var(--font-mono)] text-xs tracking-widest no-underline hover:underline"
-        >
-          {t('results.signInRequired')}
-        </Link>
+        {isAuthError ? (
+          <Link
+            to="/auth"
+            className="text-neon font-[family-name:var(--font-mono)] text-xs tracking-widest no-underline hover:underline"
+          >
+            {t('results.signInRequired')}
+          </Link>
+        ) : (
+          <button
+            onClick={() => window.location.reload()}
+            className="text-neon font-[family-name:var(--font-mono)] text-xs tracking-widest no-underline hover:underline bg-transparent border-none cursor-pointer"
+          >{t('common.tryAgain')}</button>
+        )}
       </div>
     );
   }
@@ -188,4 +196,3 @@ export default function ResultsPage() {
     </div>
   );
 }
-

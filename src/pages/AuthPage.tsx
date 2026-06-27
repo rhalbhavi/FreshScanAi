@@ -76,11 +76,15 @@ export default function AuthPage() {
       window.location.href = loginUrl;
     } catch (err) {
       setStatus('error');
-      setErrorKey(
-        err instanceof Error
-          ? err.message
-          : 'error.network.connection' // A more generic, translatable key
-      );
+      // Default to a generic auth error key
+      let key = 'auth.authFailed';
+      if (err instanceof Error) {
+        // If the API layer already provided a translation key, use it
+        if (err.message.startsWith('error.')) {
+          key = err.message;
+        }
+      }
+      setErrorKey(key);
       console.error('Auth initiation failed:', err);
     }
   };
@@ -136,11 +140,6 @@ export default function AuthPage() {
             </p>
           )}
 
-          {turnstileError && (
-            <p className="text-error text-sm mt-4 font-[family-name:var(--font-mono)]">
-              {turnstileError.message}
-            </p>
-          )}
         </div>
 
         <div className="space-y-4">

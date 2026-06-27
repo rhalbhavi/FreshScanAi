@@ -44,7 +44,11 @@ export default function AnalysisDashboard() {
 
         setScan(res.scan);
       } catch (err) {
-        setErrorKey(err instanceof Error ? err.message : 'dashboard.noDataMessage');
+        if (err instanceof Error && err.message.startsWith('error.')) {
+          setErrorKey(err.message);
+        } else {
+          setErrorKey('dashboard.noDataMessage');
+        }
       } finally {
         setLoading(false);
       }
@@ -123,7 +127,7 @@ export default function AnalysisDashboard() {
               <span className="font-[family-name:var(--font-display)] text-8xl md:text-9xl font-bold text-neon leading-none">
                 {freshness_index}
               </span>
-              <span className="font-[family-name:var(--font-display)] text-2xl text-on-surface-variant font-bold">{t('ashboard.scorePercentage')}</span>
+              <span className="font-[family-name:var(--font-display)] text-2xl text-on-surface-variant font-bold">{t('dashboard.scorePercentage')}</span>
             </div>
 
             <div className="h-2 bg-surface-highest w-full mb-4">
@@ -155,7 +159,7 @@ export default function AnalysisDashboard() {
 
           {/* Species panel */}
           <GlassCard className="md:w-72 p-6" variant="glass">
-            <span className="font-[family-name:var(--font-mono)] text-[0.625rem] tracking-widest text-on-surface-variant uppercase block mb-4">{t('ashboard.detectedSpecimen')}</span>
+            <span className="font-[family-name:var(--font-mono)] text-[0.625rem] tracking-widest text-on-surface-variant uppercase block mb-4">{t('dashboard.detectedSpecimen')}</span>
 
             <div className="flex flex-wrap gap-2 mb-4">
               {species.tags.map(tag => (
@@ -170,20 +174,20 @@ export default function AnalysisDashboard() {
 
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-on-surface-variant font-[family-name:var(--font-mono)] text-[0.625rem]">{t('ashboard.weightEst')}</span>
+                <span className="text-on-surface-variant font-[family-name:var(--font-mono)] text-[0.625rem]">{t('dashboard.weightEst')}</span>
                 <span className={`font-[family-name:var(--font-display)] font-semibold ${gradeColor(grade)}`}>
                   ~{species.weight_estimate_kg} kg
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-on-surface-variant font-[family-name:var(--font-mono)] text-[0.625rem]">{t('ashboard.catchAge')}</span>
+                <span className="text-on-surface-variant font-[family-name:var(--font-mono)] text-[0.625rem]">{t('dashboard.catchAge')}</span>
                 <span className={`font-[family-name:var(--font-display)] font-semibold ${gradeColor(grade)}`}>
                   ~{species.catch_age_hours} hrs
                 </span>
               </div>
               {scan.market_name && (
                 <div className="flex justify-between">
-                  <span className="text-on-surface-variant font-[family-name:var(--font-mono)] text-[0.625rem]">{t('ashboard.marketLabel')}</span>
+                  <span className="text-on-surface-variant font-[family-name:var(--font-mono)] text-[0.625rem]">{t('dashboard.marketLabel')}</span>
                   <span className={`font-[family-name:var(--font-display)] font-semibold ${gradeColor(grade)}`}>
                     {scan.market_name}
                   </span>

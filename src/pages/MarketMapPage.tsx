@@ -220,7 +220,7 @@ export default function MarketMapPage() {
                   {selected.name}
                 </h3>
                 <span className="font-mono text-[0.5625rem] tracking-widest text-on-surface-variant">
-                  {selected.vendors} {t('arketMap.vendorsLabel')}
+                  {selected.vendors} {t('marketMap.vendorsLabel')}
                 </span>
               </div>
               <div className="text-right">
@@ -229,7 +229,7 @@ export default function MarketMapPage() {
                 >
                   {selected.score}
                 </span>
-                <span className="block font-mono text-[0.5rem] tracking-widest text-on-surface-variant">{t('esults.avgFreshness')}</span>
+                <span className="block font-mono text-[0.5rem] tracking-widest text-on-surface-variant">{t('marketMap.avgFreshness')}</span>
               </div>
             </div>
             <div className="h-1.5 bg-surface-highest">

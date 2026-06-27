@@ -100,8 +100,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0      # full history needed for subtree push
+          fetch-depth: 0 # full history needed for subtree push
           lfs: true
+          persist-credentials: false
 
       - name: Configure git
         run: |

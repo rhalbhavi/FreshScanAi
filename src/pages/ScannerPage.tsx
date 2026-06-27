@@ -187,7 +187,7 @@ export default function ScannerPage() {
         currentVideo.srcObject = null;
       }
     };
-  }, [facingMode, scanPhase, t]);
+  }, [facingMode, scanPhase]);
 
   // ── Progress bar animation ─────────────────────────────────────────────────
   const startProgress = useCallback(() => {
@@ -299,15 +299,16 @@ export default function ScannerPage() {
         setTimeout(() => navigate("/analysis"), 1800);
       } catch (err) {
         stopProgress(0);
-        const msg = err instanceof Error ? err.message : 'scanner.inferenceFailed';
-        const isNotFish =
-          msg.includes("NOT_A_FISH") ||
-          msg.includes("not appear to contain a fish");
-        setErrorKey(
-          isNotFish
-            ? 'scanner.notFishDetected'
-            : msg || 'scanner.inferenceFailed',
-        );
+        let key = 'scanner.inferenceFailed'; // Fallback key
+        if (err instanceof Error) {
+          const msg = err.message;
+          if (msg.startsWith('error.')) {
+            key = msg; // Use pre-formatted key from api.ts
+          } else if (msg.includes("NOT_A_FISH") || msg.includes("not appear to contain a fish")) {
+            key = 'scanner.notFishDetected';
+          }
+        }
+        setErrorKey(key);
         setScanPhase("error");
       }
     }, [startProgress, stopProgress, stopCamera, navigate]
@@ -592,7 +593,7 @@ export default function ScannerPage() {
                 {/* Freshness score bar */}
                 <div className="bg-surface-mid border border-on-surface-variant/20 p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-[family-name:var(--font-mono)] text-[0.55rem] tracking-widest text-on-surface-variant">{t('canner.freshnessIndex')}</span>
+                    <span className="font-[family-name:var(--font-mono)] text-[0.55rem] tracking-widest text-on-surface-variant">{t('scanner.freshnessIndex')}</span>
                     <span
                       className={`font-[family-name:var(--font-display)] text-lg font-bold ${labelColor(result.label)}`}
                     >
