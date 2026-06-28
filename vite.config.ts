@@ -55,5 +55,9 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
+    watch: {
+      // Ignore the backend virtual environment to prevent ENOSPC errors
+      ignored: ['**/backend/.venv/**'],
+    },
   },
 });
